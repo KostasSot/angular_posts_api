@@ -1,0 +1,35 @@
+/* Container to center content and limit its width */
+.container {
+  max-width: 800px; /* Adjust this value to your liking */
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center; /* Center the title */
+}
+
+/* Style the featured image */
+.post-content img {
+  display: block;
+  max-width: 100%; /* Make sure it's responsive */
+  height: auto;
+  margin: 20px auto; /* Add space above/below and center it */
+  border-radius: 8px;
+}
+
+/* Style the post title */
+.post-content h1 {
+  margin-bottom: 20px;
+}
+
+/* Style the main post content */
+.post-content .post-full-content {
+  text-align: left; /* Justify text to the left for readability */
+  line-height: 1.6;
+}
+
+/* Style for the 'Back to posts' link */
+.back-link {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: #007bff;
+  text-decoration: none;
+}

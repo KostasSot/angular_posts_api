@@ -1,0 +1,40 @@
+<div class="form-container">
+  <div class="grid-flex">
+    <h2>Create New Post</h2>
+    <a class="redirect-button" routerLink="/all-posts">All Posts</a>
+  </div>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" id="title" [(ngModel)]="title" name="title" required>
+    </div>
+
+    <div class="form-group">
+      <label>Categories</label>
+      <div class="category-checkboxes">
+        <div class="category-inputs" *ngFor="let category of allCategories">
+          <label>
+            <input type="checkbox" [(ngModel)]="categoriesSelection[category.id]"
+              [name]="category.name">
+              {{ category.name }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="content">Content</label>
+      <textarea id="content" [(ngModel)]="content" name="content" rows="10" required></textarea>
+    </div>
+
+    <button type="submit">Publish Post</button>
+
+    <div *ngIf="successMessage" class="success-message">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+  </form>
+</div>

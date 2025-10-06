@@ -1,0 +1,39 @@
+<div class="container">
+  <div class="grid-flex">
+    <a routerLink="/" class="home-btn">
+      <h1>My WordPress Blog</h1>
+    </a>
+    <a class="redirect-button" routerLink="/create-post">Create new post</a>
+  </div>
+  <div class="posts-grid">
+    <div *ngFor="let post of posts" class="post-item">
+      <img *ngIf="post._embedded['wp:featuredmedia']" [src]="post._embedded['wp:featuredmedia'][0].source_url" alt="Featured Image">
+
+      <h2 [innerHTML]="post.title.rendered"></h2>
+
+      <div class="category-tags" *ngIf="post._embedded['wp:term']">
+        <a *ngFor="let category of post._embedded['wp:term'][0]"
+           [routerLink]="['/category', category.id]">
+          <span class="category-tag">{{ category.name }}</span>
+        </a>
+      </div>
+
+      <div class="post-meta">
+        <span>by <strong>{{ post._embedded.author[0].name }}</strong> on <strong>{{ post.date | date: 'longDate' }}</strong></span>
+      </div>
+
+      <div class="excerpt" [innerHTML]="post.excerpt.rendered"></div>
+
+      <a class="read-more-btn" [routerLink]="['/posts', post.id]">Read More</a>
+    </div>
+  </div>
+  <div class="pagination-controls" *ngIf="totalPages > 1">
+      <button (click)="previousPage()" [disabled]="currentPage === 1">
+        &larr; Previous Page
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next Page &rarr;
+      </button>
+    </div>
+</div>

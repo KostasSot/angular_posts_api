@@ -1,0 +1,13 @@
+<div class="container">
+  <h1>Welcome to my Wordpress Blog</h1>
+  <p>
+    This is the homepage of my Angular project where posts from Wordpress Loads with wordpress API
+  </p>
+  <div class="routing-btns">
+    <a class="redirect-button" routerLink="/all-posts">View All Posts</a>
+    <div class="admin-links">
+      <a class="redirect-button" *ngIf="wordpress.isLoggedIn()" routerLink="/create-post">Create New Post</a>
+      <a class="redirect-button" *ngIf="!wordpress.isLoggedIn()" routerLink="/login">Admin Login</a>
+    </div>
+  </div>
+</div>

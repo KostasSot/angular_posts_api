@@ -1,0 +1,26 @@
+<div class="container">
+  <h1>Posts in: {{ category?.name }}</h1>
+  <a routerLink="/all-posts">&larr; Back to All Posts</a>
+
+  <div class="posts-grid" *ngIf="posts.length > 0; else noPosts">
+    <div *ngFor="let post of posts" class="post-item">
+      <img *ngIf="post._embedded['wp:featuredmedia']" [src]="post._embedded['wp:featuredmedia'][0].source_url" alt="Featured Image">
+      <div class="post-content">
+        <h2 [innerHTML]="post.title.rendered"></h2>
+        <div class="category-tags" *ngIf="post._embedded['wp:term']">
+          <span class="category-tag">{{ category.name }}</span>
+        </div>
+        <div class="post-meta">
+          <span>by {{ post._embedded.author[0].name }}</span>
+          <span>on {{ post.date | date: 'longDate' }}</span>
+        </div>
+        <div [innerHTML]="post.excerpt.rendered"></div>
+      </div>
+      <a [routerLink]="['/posts', post.id]">Read More</a>
+    </div>
+  </div>
+
+  <ng-template #noPosts>
+    <p>No posts found in this category.</p>
+  </ng-template>
+</div>
