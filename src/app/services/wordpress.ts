@@ -1,6 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map, tap } from 'rxjs';
+import { Observable, map, tap, switchMap, of } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
+
+interface DecodedToken {
+  data: {
+    user: {
+      id: string;
+    }
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -39,16 +48,38 @@ export class Wordpress {
   }
 
   //login authentication method
-  login(username: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.loginUrl}jwt-auth/v1/token`, { username, password })
+ login(username: string, password: string): Observable<any> {
+    const loginUrl = `${this.loginUrl}jwt-auth/v1/token`;
+    return this.http.post<any>(loginUrl, { username, password })
       .pipe(
-        tap(response => {
-          // Save token to browser local storage
+        // Use switchMap to chain another API call
+        switchMap(response => {
           if (response && response.token) {
             localStorage.setItem('token', response.token);
+            // Decode the token to get the user ID
+            const decodedToken: DecodedToken = jwtDecode(response.token);
+            const userId = decodedToken.data.user.id;
+            // Fetch user details and return them
+            return this.http.get<any>(`${this.loginUrl}wp/v2/users/${userId}`);
+          }
+          return of(null); // Return an empty observable if login fails
+        }),
+        tap(user => {
+          // Save the user's display name
+          if (user) {
+            localStorage.setItem('user_display_name', user.name);
           }
         })
       );
+  }
+
+  getUserDisplayName(): string | null {
+    return localStorage.getItem('user_display_name');
+  }
+
+  //logout method
+  logout(): void {
+    localStorage.removeItem('token');
   }
 
   isLoggedIn(): boolean {
@@ -56,28 +87,32 @@ export class Wordpress {
   }
 
   // NEW: Create a new post
-  createPost(title: string, content: string, categories: number [], featured_media?: number ): Observable<any> {
+  createPost(title: string, content: string, categories: number[], featured_media?: number, acfData?: any): Observable<any> {
     const token = localStorage.getItem('token');
-
     if (!token) {
       throw new Error('No token found!');
     }
 
-    // send token in special header
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
 
-    const body : any = {
+    const body: any = {
       title,
       content,
       status: 'publish',
-      categories
+      categories,
+      acf: acfData
     };
 
     if (featured_media) {
       body.featured_media = featured_media;
+    }
+
+    // Add the ACF fields to the body if they exist
+    if (acfData) {
+      body.acf = acfData;
     }
 
     return this.http.post<any>(`${this.apiUrl}posts`, body, { headers });

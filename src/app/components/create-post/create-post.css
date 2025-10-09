@@ -66,3 +66,7 @@ button {
   gap: 5px;
   cursor: pointer;
 }
+
+pre {
+  display: none;
+}

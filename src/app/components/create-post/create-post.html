@@ -4,10 +4,18 @@
     <a class="redirect-button" routerLink="/all-posts">All Posts</a>
   </div>
 
-  <form (ngSubmit)="onSubmit()">
+  <form #myForm="ngForm" (ngSubmit)="onSubmit()">
+
+    <pre>Is form valid: {{ myForm.valid }}</pre>
+
     <div class="form-group">
       <label for="title">Title</label>
       <input type="text" id="title" [(ngModel)]="title" name="title" required>
+    </div>
+
+    <div class="form-group">
+      <label for="subtitle">Post Subtitle</label>
+      <input type="text" id="subtitle" [(ngModel)]="subtitle" name="subtitle">
     </div>
 
     <div class="form-group">

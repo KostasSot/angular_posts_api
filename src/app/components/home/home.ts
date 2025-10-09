@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Wordpress } from '../../services/wordpress';
 
@@ -10,6 +10,13 @@ import { Wordpress } from '../../services/wordpress';
   styleUrl: './home.css'
 })
 export class Home {
+
+
   //wordpress service injection
-  constructor(public wordpress: Wordpress) {}
+  constructor(public wordpress: Wordpress, private router: Router) {}
+
+  onLogout() {
+    this.wordpress.logout();
+    this.router.navigate(['/']);
+  }
 }

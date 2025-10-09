@@ -39,6 +39,8 @@ export class CreatePostComponent implements OnInit {
   // This object tracks which category checkboxes are checked.
   // The key is the category ID (a number), and the value is true or false.
   categoriesSelection: { [key: number]: boolean } = {};
+  subtitle= '';
+myForm: any;
 
   // The constructor is where we inject the services our component needs
   constructor(private wordpress: Wordpress, private router: Router) { }
@@ -67,47 +69,40 @@ export class CreatePostComponent implements OnInit {
   // --- COMPONENT METHOD ---
   // This method is called when the form in the HTML is submitted.
   onSubmit(): void {
-    // Reset any previous success or error messages
     this.successMessage = '';
     this.errorMessage = '';
 
-    // --- Prepare the Data to Send ---
-
-    // 1. Get the selected category IDs
-    // Object.keys gets all the category IDs from our selection object (as strings)
     const selectedCategoryIds = Object.keys(this.categoriesSelection)
-      // Filter the array to keep only the keys where the value is 'true' (checked)
       .filter(key => this.categoriesSelection[Number(key)])
-      // Convert the remaining string keys back into numbers
       .map(key => Number(key));
 
-    // 2. Get a random featured image ID
     let randomImageId: number | undefined = undefined;
-    // Check if we have any images to choose from
     if (this.allMedia.length > 0) {
-      // Pick a random index from the allMedia array
       const randomIndex = Math.floor(Math.random() * this.allMedia.length);
-      // Get the ID of the image at that random index
       randomImageId = this.allMedia[randomIndex].id;
     }
 
-    // --- Make the API Call ---
+    // Create an object for our ACF data
+    const acfData = {
+      subtitle: this.subtitle
+    };
 
-    // Call the createPost method in our service, passing all the prepared data
-    this.wordpress.createPost(this.title, this.content, selectedCategoryIds, randomImageId).subscribe({
-      // The 'next' block runs if the API call is successful
+    // Pass the acfData object to the service
+    this.wordpress.createPost(this.title, this.content, selectedCategoryIds, randomImageId, acfData).subscribe({
       next: (response) => {
+        // This 'next' block runs on success
         this.successMessage = 'Post created successfully!';
-        // After 2 seconds, redirect the user back to the main posts list
-        setTimeout(() => {
-          this.router.navigate(['/all-posts']);
-        }, 2000);
+
+        // The redirect logic goes here
+        // setTimeout(() => {
+        //   this.router.navigate(['/all-posts']);
+        // }, 2000);
       },
-      // The 'error' block runs if the API call fails
       error: (err) => {
-        this.errorMessage = 'Failed to create post. Please make sure you are logged in.';
+        this.errorMessage = 'Failed to create post. Please check your credentials.';
         console.error('Create post error', err);
       }
     });
   }
 }
+

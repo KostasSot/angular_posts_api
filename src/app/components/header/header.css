@@ -1,0 +1,40 @@
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 20px;
+}
+.logo a {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #333;
+  text-decoration: none;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.user-info span {
+  font-weight: bold;
+}
+.user-info button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.redirect-button {
+    border: 1px solid;
+    border-radius: 50px;
+    padding: 10px 10px;
+    background-color: #000;
+    color: #fff;
+    text-decoration: none;
+}

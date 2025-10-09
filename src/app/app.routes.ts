@@ -5,6 +5,7 @@ import { Home } from './components/home/home';
 import { CategoryPosts } from './components/category-posts/category-posts';
 import { LoginComponent } from './components/login/login';
 import { CreatePostComponent } from './components/create-post/create-post';
+import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
   { path: '', component: Home},
@@ -13,5 +14,5 @@ export const routes: Routes = [
   { path: 'posts/:id', component: SinglePostComponent },
   { path: 'category/:id', component: CategoryPosts},
   { path: 'login', component: LoginComponent},
-  { path: 'create-post', component: CreatePostComponent}
+  { path: 'create-post', component: CreatePostComponent, canActivate: [authGuard]}
 ];

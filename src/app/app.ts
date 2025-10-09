@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { PostsListComponent } from './components/posts-list/posts-list';
 import { SinglePostComponent } from './components/single-post/single-post';
 import { Home } from './components/home/home';
+import { HeaderComponent } from './components/header/header';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,8 @@ import { Home } from './components/home/home';
     RouterOutlet,
     PostsListComponent,
     SinglePostComponent,
-    Home
+    Home,
+    HeaderComponent
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
