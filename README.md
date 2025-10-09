@@ -1,59 +1,12 @@
-# AngularApp
+This is an Angular application that retrieves Wordpress posts via Wordpress API having the ability to create a Wordpress Post from the Angular app and be displayed in the Posts post type in your Wordpress installation.
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.4.
+Installation instructions:
+If you don't use Docker then you don't need the Dockerfile file, just the rest of the code.
 
-## Development server
+In your Wordpress installation you need to install a plugin called JWT Authentication for WP-API (https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/ ), then go to wp-config.php and define these:
 
-To start a local development server, run:
+define('JWT_AUTH_SECRET_KEY', 'your_secret_key');
+define('JWT_AUTH_CORS_ENABLE', true);
+define( 'WP_ENVIRONMENT_TYPE', 'local' ); -> this will unlock you the section in Users -> Profile named Applications Password.
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+We need this plugin in order to save a token in browsers localStorage, so we can login into the Angular app and create Posts as we could do from the Wordpress admin panel.
