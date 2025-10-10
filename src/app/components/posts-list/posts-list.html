@@ -3,6 +3,9 @@
     <a routerLink="/" class="home-btn">
       <h1>My WordPress Blog</h1>
     </a>
+    <div class="search-container">
+      <input #searchBox (input)="search(searchBox.value)" placeholder="Search posts..." />
+    </div>
     <a class="redirect-button" routerLink="/create-post">Create new post</a>
   </div>
   <div class="posts-grid">

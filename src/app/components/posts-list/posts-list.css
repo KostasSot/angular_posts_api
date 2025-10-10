@@ -152,3 +152,14 @@
 .pagination-controls span {
   font-weight: bold;
 }
+
+.search-container {
+  flex-grow: 1;
+  text-align: center;
+}
+.search-container input {
+  padding: 8px 12px;
+  width: 50%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}

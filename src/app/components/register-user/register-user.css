@@ -71,6 +71,11 @@ textarea#content {
     max-width: 600px;
 }
 
-pre {
-  display: none;
+.flex.redirect-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
 }
+

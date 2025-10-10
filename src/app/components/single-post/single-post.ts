@@ -16,7 +16,7 @@ export class SinglePostComponent implements OnInit {
   // We inject ActivatedRoute to get information about the current URL
   constructor(
     private route: ActivatedRoute,
-    private wordpress: Wordpress
+    public wordpress: Wordpress
   ) { }
 
   ngOnInit(): void {

@@ -4,6 +4,7 @@ import { Observable, map, tap, switchMap, of } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
 interface DecodedToken {
+  user_display_name: string;
   data: {
     user: {
       id: string;
@@ -48,26 +49,21 @@ export class Wordpress {
   }
 
   //login authentication method
- login(username: string, password: string): Observable<any> {
+  login(username: string, password: string): Observable<any> {
     const loginUrl = `${this.loginUrl}jwt-auth/v1/token`;
     return this.http.post<any>(loginUrl, { username, password })
       .pipe(
-        // Use switchMap to chain another API call
-        switchMap(response => {
+        tap(response => {
           if (response && response.token) {
+            // Step 1: Save the token
             localStorage.setItem('token', response.token);
-            // Decode the token to get the user ID
+
+            // Step 2: Decode the token to get the name directly from it
             const decodedToken: DecodedToken = jwtDecode(response.token);
-            const userId = decodedToken.data.user.id;
-            // Fetch user details and return them
-            return this.http.get<any>(`${this.loginUrl}wp/v2/users/${userId}`);
-          }
-          return of(null); // Return an empty observable if login fails
-        }),
-        tap(user => {
-          // Save the user's display name
-          if (user) {
-            localStorage.setItem('user_display_name', user.name);
+            const displayName = decodedToken.user_display_name;
+
+            // Step 3: Save the name to local storage
+            localStorage.setItem('user_display_name', displayName);
           }
         })
       );
@@ -128,5 +124,51 @@ export class Wordpress {
     return this.http.get<any[]>(`${this.apiUrl}media`);
   }
 
+  //usage of my custom feedpack api
+  sendFeedback(message: string): Observable<any> {
+    const feedbackUrl = `${this.loginUrl}my-playground/v1/submit`;
+    const body = { message };
+    return this.http.post<any>(feedbackUrl, body);
+  }
+
+  updatePost(id: number, postData: any): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) { throw new Error('No token found!'); }
+
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      });
+
+      return this.http.post<any>(`${this.loginUrl}wp/v2/posts/${id}`, postData, { headers });
+  }
+
+  //Create a new WordPress user (requires admin token)
+  createUser(username: string, firstname:string, lastname:string, email: string, password: string, role: string): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No admin token found!');
+    }
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
+    const body = {
+      username,
+      first_name: firstname,
+      last_name: lastname,
+      email,
+      password,
+      roles: [role]
+    };
+
+    return this.http.post<any>(`${this.loginUrl}wp/v2/users`, body, { headers });
+  }
+
+  searchPosts(searchTerm: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.loginUrl}wp/v2/posts?_embed&search=${searchTerm}`);
+  }
 
 }

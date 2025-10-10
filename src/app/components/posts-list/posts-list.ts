@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Wordpress } from '../../services/wordpress';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
+import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-posts-list',
@@ -17,6 +18,8 @@ export class PostsListComponent implements OnInit {
   loading: boolean = true;
   error: string | null = null;
 
+  private searchTerms = new Subject<string>();
+
   constructor(
     private wordpress: Wordpress,
     private route: ActivatedRoute,
@@ -27,6 +30,35 @@ export class PostsListComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.currentPage = Number(params.get('page')) || 1;
       this.loadPosts();
+    });
+
+    this.searchTerms.pipe(
+      // Wait 300ms after the last keystroke
+      debounceTime(300),
+      // Ignore if the new search term is the same as the previous one
+      distinctUntilChanged(),
+      // Switch to a new search observable each time the term changes
+      switchMap((term: string) => {
+        this.loading = true;
+        // If the term is empty, go back to the paginated list
+        if (!term.trim()) {
+          this.loadPosts();
+          return []; // Return an empty array to clear search results
+        }
+        // Otherwise, call the search service
+        return this.wordpress.searchPosts(term);
+      })
+    ).subscribe({
+      next: (posts) => {
+        this.posts = posts;
+        this.loading = false;
+        // Hide pagination during a search
+        this.totalPages = 0;
+      },
+      error: (err) => {
+        this.error = 'Search failed. Please try again.';
+        this.loading = false;
+      }
     });
   }
 
@@ -61,5 +93,9 @@ export class PostsListComponent implements OnInit {
       this.currentPage++;
       this.router.navigate(['/all-posts/page', this.currentPage]);
     }
+  }
+
+  search(term: string): void {
+    this.searchTerms.next(term);
   }
 }
