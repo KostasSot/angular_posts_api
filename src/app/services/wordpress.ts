@@ -168,7 +168,7 @@ export class Wordpress {
   }
 
   searchPosts(searchTerm: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.loginUrl}wp/v2/posts?_embed&search=${searchTerm}`);
+    return this.http.get<any[]>(`${this.loginUrl}wp/v2/posts?_embed&title_search=${searchTerm}`);
   }
 
 }
