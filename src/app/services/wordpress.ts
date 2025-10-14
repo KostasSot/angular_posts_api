@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map, tap, switchMap, of } from 'rxjs';
+import { Observable, map, tap, switchMap, of, forkJoin } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
 interface DecodedToken {
@@ -169,6 +169,52 @@ export class Wordpress {
 
   searchPosts(searchTerm: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.loginUrl}wp/v2/posts?_embed&title_search=${searchTerm}`);
+  }
+
+  getAllPosts(): Observable<any[]> {
+    // We need to make an authenticated call to see all posts, even private ones if needed
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    // --- Step 1: Make the initial call to get page 1 AND the total number of pages ---
+    return this.http.get<any[]>(
+      `${this.loginUrl}wp/v2/posts?_embed&per_page=100&page=1`,
+      { headers, observe: 'response' }
+    ).pipe(
+      // --- Step 2: Use switchMap to chain subsequent calls based on the first response ---
+      switchMap(response => {
+        const totalPages = Number(response.headers.get('X-WP-TotalPages'));
+        const firstPagePosts = response.body || [];
+
+        // If there's only one page, we're done! Return the posts we already have.
+        if (totalPages <= 1) {
+          return of(firstPagePosts);
+        }
+
+        // --- Step 3: Create an array of API calls for the remaining pages ---
+        const pageRequests: Observable<any[]>[] = [];
+        for (let page = 2; page <= totalPages; page++) {
+          const nextPageRequest = this.http.get<any[]>(
+            `${this.loginUrl}wp/v2/posts?_embed&per_page=100&page=${page}`,
+            { headers }
+          );
+          pageRequests.push(nextPageRequest);
+        }
+
+        // --- Step 4: Execute all remaining calls in parallel and combine results ---
+        return forkJoin(pageRequests).pipe(
+          map(arrayOfPostArrays => {
+            // We get an array of arrays, e.g., [[posts from page 2], [posts from page 3]]
+            // Flatten this into a single array
+            const otherPosts = arrayOfPostArrays.flat();
+            // Combine the posts from page 1 with all the other posts
+            return [...firstPagePosts, ...otherPosts];
+          })
+        );
+      })
+    );
   }
 
 }

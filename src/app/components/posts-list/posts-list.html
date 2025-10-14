@@ -5,38 +5,55 @@
     </a>
     <div class="search-container">
       <input #searchBox (input)="search(searchBox.value)" placeholder="Search posts..." />
+      <button class="clear-btn" *ngIf="searchBox.value" (click)="clearSearch(searchBox)">
+        &times;
+      </button>
     </div>
     <a class="redirect-button" routerLink="/create-post">Create new post</a>
   </div>
-  <div class="posts-grid">
-    <div *ngFor="let post of posts" class="post-item">
-      <img *ngIf="post._embedded['wp:featuredmedia']" [src]="post._embedded['wp:featuredmedia'][0].source_url" alt="Featured Image">
 
-      <h2 [innerHTML]="post.title.rendered"></h2>
-
-      <div class="category-tags" *ngIf="post._embedded['wp:term']">
-        <a *ngFor="let category of post._embedded['wp:term'][0]"
-           [routerLink]="['/category', category.id]">
-          <span class="category-tag">{{ category.name }}</span>
-        </a>
-      </div>
-
-      <div class="post-meta">
-        <span>by <strong>{{ post._embedded.author[0].name }}</strong> on <strong>{{ post.date | date: 'longDate' }}</strong></span>
-      </div>
-
-      <div class="excerpt" [innerHTML]="post.excerpt.rendered"></div>
-
-      <a class="read-more-btn" [routerLink]="['/posts', post.id]">Read More</a>
-    </div>
+  <div *ngIf="loading">
+    <p>Loading...</p>
   </div>
-  <div class="pagination-controls" *ngIf="totalPages > 1">
-      <button (click)="previousPage()" [disabled]="currentPage === 1">
-        &larr; Previous Page
-      </button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages">
-        Next Page &rarr;
-      </button>
+
+  <div *ngIf="error">
+    <p class="error-message">{{ error }}</p>
+  </div>
+
+  <div *ngIf="!loading && !error">
+
+    <div class="posts-grid" *ngIf="posts.length > 0">
+      <div *ngFor="let post of posts" class="post-item">
+        <img *ngIf="post._embedded['wp:featuredmedia']" [src]="post._embedded['wp:featuredmedia'][0].source_url" alt="Featured Image">
+        <h2 [innerHTML]="post.title.rendered"></h2>
+        <div class="category-tags" *ngIf="post._embedded['wp:term']">
+          <a *ngFor="let category of post._embedded['wp:term'][0]" [routerLink]="['/category', category.id]">
+            <span class="category-tag">{{ category.name }}</span>
+          </a>
+        </div>
+        <div class="post-meta">
+          <span>by <strong>{{ post._embedded.author[0].name }}</strong> on <strong>{{ post.date | date: 'longDate' }}</strong></span>
+        </div>
+        <div class="excerpt" [innerHTML]="post.excerpt.rendered"></div>
+        <a class="read-more-btn" [routerLink]="['/posts', post.id]">Read More</a>
+      </div>
     </div>
+
+    <div class="no-results" *ngIf="posts.length === 0">
+      <p>No posts found. Please try a different search term.</p>
+    </div>
+
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+        <button (click)="previousPage()" [disabled]="currentPage === 1">
+          &larr; Previous Page
+        </button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+          Next Page &rarr;
+        </button>
+
+        <button class="show-all-btn" (click)="loadAllPosts()">Show All</button>
+
+      </div>
+  </div>
 </div>

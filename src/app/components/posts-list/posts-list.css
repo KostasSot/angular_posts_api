@@ -163,3 +163,27 @@
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+
+/* Update search container to position the button */
+.search-container {
+  position: relative; /* This is the key for positioning the child button */
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Style the clear button */
+.clear-btn {
+  position: absolute;
+  right: 26%; /* Adjust as needed */
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #888;
+  cursor: pointer;
+}
+
+

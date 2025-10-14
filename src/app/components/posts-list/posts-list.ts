@@ -98,4 +98,27 @@ export class PostsListComponent implements OnInit {
   search(term: string): void {
     this.searchTerms.next(term);
   }
+
+  clearSearch(inputElement: HTMLInputElement): void {
+    // Clear the input field's value
+    inputElement.value = '';
+    // Trigger a new "search" with an empty term to reset the list
+    this.search('');
+  }
+
+  loadAllPosts(): void {
+    this.loading = true;
+    this.error = null;
+    this.wordpress.getAllPosts().subscribe({
+      next: (posts) => {
+        this.posts = posts;
+        this.totalPages = 0; // Set to 0 to hide pagination controls
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Could not load all posts. Please try again.';
+        this.loading = false;
+      }
+    });
+  }
 }
