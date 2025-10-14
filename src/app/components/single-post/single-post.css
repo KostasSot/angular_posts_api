@@ -24,6 +24,15 @@
   text-align: center;
 }
 
+:host ::ng-deep .content p img,
+:host ::ng-deep .content p img,
+:host ::ng-deep .content p img,
+:host ::ng-deep .content p img,
+:host ::ng-deep .content p img,
+:host ::ng-deep .content p img {
+  max-width: 100%;
+}
+
 /* Style the featured image */
 .post-content img {
   display: block;
