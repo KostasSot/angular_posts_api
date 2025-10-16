@@ -67,3 +67,12 @@ function force_search_in_title_only( $search, $wp_query ) {
     remove_filter( 'posts_search', 'force_search_in_title_only', 10 );
     return $search;
 }
+
+// increase the maximum number of posts in one page
+function increase_rest_api_per_page_limit( $params ) {
+    if ( isset( $params['per_page'] ) ) {
+        $params['per_page']['maximum'] = 500; // Set a new, higher limit
+    }
+    return $params;
+}
+add_filter( 'rest_post_collection_params', 'increase_rest_api_per_page_limit', 10, 1 );
