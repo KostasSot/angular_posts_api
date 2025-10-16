@@ -121,7 +121,7 @@ export class Wordpress {
 
   //get wp media
   getMedia(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}media`);
+    return this.http.get<any[]>(`${this.apiUrl}media?per_page=100`);
   }
 
   //usage of my custom feedpack api
