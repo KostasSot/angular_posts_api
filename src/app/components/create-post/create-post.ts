@@ -14,7 +14,7 @@ import { forkJoin, switchMap, of, Observable } from 'rxjs';
 @Component({
   selector: 'app-create-post',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterLink],
   templateUrl: './create-post.html',
   styleUrls: ['./create-post.css']
 })

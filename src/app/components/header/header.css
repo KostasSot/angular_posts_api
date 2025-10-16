@@ -3,38 +3,36 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-  margin-bottom: 20px;
+  background-color: var(--light-gray);
+  border-bottom: 1px solid var(--medium-gray);
 }
+
 .logo a {
   font-weight: bold;
   font-size: 1.5rem;
-  color: #333;
-  text-decoration: none;
+  color: var(--text-color);
 }
+
 .user-info {
   display: flex;
   align-items: center;
   gap: 15px;
 }
+
 .user-info span {
   font-weight: bold;
 }
+
 .user-info button {
-  background-color: #dc3545;
+  background-color: var(--danger-color);
   color: white;
   border: none;
   padding: 8px 12px;
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.redirect-button {
-    border: 1px solid;
-    border-radius: 50px;
-    padding: 10px 10px;
-    background-color: #000;
-    color: #fff;
-    text-decoration: none;
+.user-info button:hover {
+  background-color: var(--danger-hover);
 }

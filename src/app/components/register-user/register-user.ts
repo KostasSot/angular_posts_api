@@ -25,7 +25,13 @@ export class RegisterUser {
   // NEW: Add a list of available roles
   availableRoles: string[] = ['subscriber', 'contributor', 'author', 'editor'];
 
+  showPassword = false;
+
   constructor(private wordpress: Wordpress) {}
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   onSubmit(): void {
     this.successMessage = '';

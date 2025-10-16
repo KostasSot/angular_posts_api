@@ -71,7 +71,7 @@
 }
 
 textarea#content {
-    max-width: 600px;
+    max-width: 100%;
 }
 
 .buttons {
