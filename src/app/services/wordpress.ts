@@ -217,4 +217,21 @@ export class Wordpress {
     );
   }
 
+  uploadMedia(file: File): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) { throw new Error('No admin token found!'); }
+
+    // For file uploads, we use FormData
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    // IMPORTANT: For FormData, we ONLY set the Authorization header.
+    // The browser will automatically set the correct 'Content-Type' for file uploads.
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.post<any>(`${this.loginUrl}wp/v2/media`, formData, { headers });
+  }
+
 }

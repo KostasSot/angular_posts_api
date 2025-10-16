@@ -73,3 +73,47 @@ button {
     justify-content: space-between;
 }
 
+.upload-section {
+  margin-bottom: 15px;
+}
+input[type="file"] {
+  display: none; /* Hide the default ugly file input */
+}
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+  background-color: #f7f7f7;
+  border-radius: 5px;
+}
+.file-name {
+  margin-left: 10px;
+  font-style: italic;
+  color: #555;
+}
+
+.image-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 5px;
+  max-height: 350px;
+  overflow-y: auto;
+}
+.image-option {
+  border: 3px solid transparent;
+  cursor: pointer;
+}
+.image-option img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+.image-option.selected {
+  border-color: #007bff;
+}
+

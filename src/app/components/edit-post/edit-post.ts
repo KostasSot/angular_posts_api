@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Wordpress } from '../../services/wordpress';
 import { RouterLink } from '@angular/router';
+import { forkJoin, switchMap, of, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-edit-post',
@@ -15,6 +16,9 @@ import { RouterLink } from '@angular/router';
 export class EditPost implements OnInit {
   post: any; // To hold the post data
   successMessage = '';
+  allMedia: any[] = [];
+  selectedMediaId: number | null = null;
+  fileToUpload: File | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,27 +28,63 @@ export class EditPost implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    // Fetch the existing post data to pre-fill the form
-    this.wordpress.getPost(id).subscribe(data => {
-      this.post = data;
+    // Fetch both the post details and all media files at the same time
+    forkJoin({
+      post: this.wordpress.getPost(id),
+      media: this.wordpress.getMedia()
+    }).subscribe(response => {
+      this.post = response.post;
+      this.allMedia = response.media;
+      // Pre-select the post's current featured image
+      this.selectedMediaId = response.post.featured_media;
     });
   }
 
-  onSubmit(): void {
-    const postData = {
-      title: this.post.title.rendered,
-      content: this.post.content.rendered,
-      acf: {
-        subtitle: this.post.acf.subtitle
-      }
-    };
+  // Called when a user selects an existing image from the gallery
+  selectMedia(id: number): void {
+    this.selectedMediaId = id;
+    this.fileToUpload = null; // Clear any pending file upload
+  }
 
-    this.wordpress.updatePost(this.post.id, postData).subscribe(response => {
+  // Called when a user chooses a new file to upload
+  onFileChange(event: any): void {
+    const fileList: FileList = event.target.files;
+    if (fileList.length > 0) {
+      this.fileToUpload = fileList[0];
+      this.selectedMediaId = null; // Clear any existing selection
+    }
+  }
+
+  onSubmit(): void {
+    // Start with an observable that does nothing (for the case where no image changes)
+    let uploadOrSelect$: Observable<any> = of({ id: this.selectedMediaId });
+
+    // If a new file was chosen, change the observable to the upload process
+    if (this.fileToUpload) {
+      uploadOrSelect$ = this.wordpress.uploadMedia(this.fileToUpload);
+    }
+
+    uploadOrSelect$.pipe(
+      // Use switchMap to chain the update call after the upload (if any)
+      switchMap(mediaResponse => {
+        const featuredMediaId = mediaResponse ? mediaResponse.id : null;
+
+        const postData = {
+          title: this.post.title.rendered,
+          content: this.post.content.rendered,
+          featured_media: featuredMediaId,
+          acf: {
+            subtitle: this.post.acf.subtitle
+          }
+        };
+        // Now, update the post
+        return this.wordpress.updatePost(this.post.id, postData);
+      })
+    ).subscribe(response => {
       this.successMessage = "Post updated successfully!";
       setTimeout(() => {
-        // Navigate back to the single post view
         this.router.navigate(['/posts', this.post.id]);
-      }, 3000);
+      }, 2000);
     });
   }
 }
