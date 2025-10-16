@@ -1,7 +1,7 @@
 <div class="form-container" *ngIf="post">
   <div class="grid-flex">
     <h2>Edit Post</h2>
-    <a class="redirect-button" routerLink="/all-posts">Cancel</a>
+    <a class="redirect-button" [routerLink]="['/posts', post.id]">Cancel</a>
   </div>
   <form (ngSubmit)="onSubmit()">
     <div class="form-group">
