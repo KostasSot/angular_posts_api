@@ -234,4 +234,16 @@ export class Wordpress {
     return this.http.post<any>(`${this.loginUrl}wp/v2/media`, formData, { headers });
   }
 
+  deletePost(id: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) { throw new Error('No admin token found!'); }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    // Use the http.delete method for the request
+    return this.http.delete<any>(`${this.loginUrl}wp/v2/posts/${id}`, { headers });
+  }
+
 }

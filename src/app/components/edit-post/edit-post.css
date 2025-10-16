@@ -163,3 +163,19 @@ input[type="file"] {
   border-color: #007bff;
 }
 
+.delete-button {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--danger-color); /* Use our global red color */
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+  background-color: var(--danger-hover);
+}
+

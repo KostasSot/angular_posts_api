@@ -87,4 +87,25 @@ export class EditPost implements OnInit {
       }, 2000);
     });
   }
+
+  onDelete(): void {
+    // 1. Show a confirmation dialog to the user
+    const confirmation = confirm('Are you sure you want to delete this post? This action cannot be undone.');
+
+    // 2. Only proceed if the user clicked "OK"
+    if (confirmation) {
+      this.wordpress.deletePost(this.post.id).subscribe({
+        next: () => {
+          // 3. On success, redirect to the all-posts page
+          alert('Post deleted successfully.');
+          this.router.navigate(['/all-posts']);
+        },
+        error: (err) => {
+          // 4. On failure, show an error message
+          alert('Failed to delete post. Please try again.');
+          console.error('Delete post error', err);
+        }
+      });
+    }
+  }
 }
