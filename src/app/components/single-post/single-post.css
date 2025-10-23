@@ -1,80 +1,191 @@
-/* Container to center content and limit its width */
 .container {
-  max-width: 800px; /* Adjust this value to your liking */
+  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
 }
 
-.container h1,
-.container h2,
-.container h3,
-.container h4,
-.container h5,
-.container h6
-{
-  text-align: center;
+.post-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
-:host ::ng-deep .content h1,
-:host ::ng-deep .content h2,
-:host ::ng-deep .content h3,
-:host ::ng-deep .content h4,
-:host ::ng-deep .content h5,
-:host ::ng-deep .content h6 {
-  text-align: center;
+.back-link, .edit-link {
+  display: inline-block;
+  font-weight: bold;
+  color: #007bff;
+  text-decoration: none;
+  padding: 8px 12px;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  transition: all 0.2s ease-in-out;
 }
 
-:host ::ng-deep .content p img,
-:host ::ng-deep .content p img,
-:host ::ng-deep .content p img,
-:host ::ng-deep .content p img,
-:host ::ng-deep .content p img,
-:host ::ng-deep .content p img {
+.back-link:hover, .edit-link:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.post-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.post-content img {
+  width: 100%;
+}
+
+.post-header img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.post-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.post-meta {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 20px; /* Added space below meta */
+}
+
+.post-meta span {
+  margin: 0 10px;
+}
+
+.post-body {
+  line-height: 1.7;
+  font-size: 1.1rem;
+}
+
+/* Styles for images within the post content */
+:host ::ng-deep .post-body img {
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  display: block;
+  margin: 30px auto;
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* --- Comment Section Styles --- */
+.comments-section {
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 1px solid #eee; /* Added separator */
+}
+
+.comments-section h3 {
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.comment-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.comment-item {
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px dashed #eee;
+}
+.comment-item:last-child {
+  border-bottom: none; /* Remove border from last comment */
+}
+
+
+.comment-author {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.comment-content {
+  line-height: 1.5;
+}
+
+.comment-content p {
+  margin: 0;
+}
+
+.comment-area {
   max-width: 100%;
 }
 
-/* Style the featured image */
-.post-content img {
-  display: block;
-  max-width: 100%; /* Make sure it's responsive */
-  height: auto;
-  margin: 20px auto; /* Add space above/below and center it */
-  border-radius: 8px;
+/* --- Add Comment Form Styles --- */
+.add-comment-form {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px dashed #eee;
 }
 
-/* Style the post title */
-.post-content h1 {
-  margin-bottom: 20px;
+.add-comment-form h4 {
+  margin-bottom: 15px;
 }
 
-/* Style the main post content */
-.post-content .post-full-content {
-  text-align: left; /* Justify text to the left for readability */
-  line-height: 1.6;
+.add-comment-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  box-sizing: border-box; /* Include padding in width */
+  min-height: 100px;
 }
 
-/* Style for the 'Back to posts' link */
-.back-link {
-  display: inline-block;
-  margin-bottom: 20px;
-  color: #007bff;
-  text-decoration: none;
+.add-comment-form button {
+  padding: 10px 20px;
+  background-color: var(--primary-color, #007bff); /* Use global variable if available */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.redirect-button {
-    border: 1px solid;
-    border-radius: 50px;
-    padding: 10px 10px;
-    background-color: #000;
-    color: #fff;
-    text-decoration: none;
+.add-comment-form button:hover {
+  background-color: var(--primary-hover, #0056b3); /* Use global variable if available */
 }
 
-textarea#content {
-    max-width: 100%;
+/* Messages */
+.add-comment-form .success-message,
+.add-comment-form .error-message {
+  padding: 10px;
+  margin-top: 15px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+.add-comment-form .success-message {
+  background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;
+}
+.add-comment-form .error-message {
+  background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
 }
 
-.buttons {
-    display: flex;
-    justify-content: space-between;
+.login-prompt {
+  margin-top: 30px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  text-align: center;
+}
+
+/* Loading indicator style */
+.loading-indicator {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+  color: #777;
 }

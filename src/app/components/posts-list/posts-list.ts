@@ -18,6 +18,9 @@ export class PostsListComponent implements OnInit {
   loading: boolean = true;
   error: string | null = null;
 
+  //state variagble to track sorting
+  sortBy: 'date' | 'comments' = 'date'; //default sorting by date
+
   private searchTerms = new Subject<string>();
 
   constructor(
@@ -65,8 +68,16 @@ export class PostsListComponent implements OnInit {
   loadPosts(): void {
     this.loading = true;
     this.error = null;
+    this.posts = []; //clear posts while loading
 
-    this.wordpress.getPosts(this.currentPage).subscribe({
+    let postsObservable;
+    if (this.sortBy === 'comments') {
+      postsObservable = this.wordpress.getPostsByComments(this.currentPage);
+    } else {
+      postsObservable = this.wordpress.getPosts(this.currentPage);
+    }
+
+    postsObservable.subscribe({
       next: (response) => {
         this.posts = response.posts;
         this.totalPages = response.totalPages;
@@ -78,6 +89,26 @@ export class PostsListComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  sortByDate(): void {
+    if (this.sortBy !== 'date') { // Only reload if the sort order actually changed
+      this.sortBy = 'date';
+      this.currentPage = 1; // Reset to page 1
+      this.loadPosts();     // Manually trigger reload
+    }
+  }
+
+  sortByComments(): void {
+    if (this.sortBy !== 'comments') { // Only reload if the sort order actually changed
+      this.sortBy = 'comments';
+      this.currentPage = 1; // Reset to page 1
+      this.loadPosts();     // Manually trigger reload
+    }
+  }
+
+  search(term: string): void {
+    this.searchTerms.next(term);
   }
 
 
@@ -95,9 +126,7 @@ export class PostsListComponent implements OnInit {
     }
   }
 
-  search(term: string): void {
-    this.searchTerms.next(term);
-  }
+
 
   clearSearch(inputElement: HTMLInputElement): void {
     // Clear the input field's value
@@ -109,6 +138,7 @@ export class PostsListComponent implements OnInit {
   loadAllPosts(): void {
     this.loading = true;
     this.error = null;
+    this.sortBy = 'date'; //force back to date sort when showing all
     this.wordpress.getAllPosts().subscribe({
       next: (posts) => {
         this.posts = posts;

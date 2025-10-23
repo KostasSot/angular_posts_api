@@ -1,19 +1,66 @@
 <div class="container">
-  <div *ngIf="post" class="post-wrapper">
-    <div class="buttons">
-      <a class="redirect-button" routerLink="/all-posts">&larr; Back to Posts</a>
-      <a class="redirect-button" *ngIf="wordpress.isLoggedIn()" [routerLink]="['/edit-post', post.id]">
-          Edit Post
+  <!-- Use simple *ngIf again -->
+  <div *ngIf="post && !loading">
+    <div class="post-nav">
+      <a routerLink="/all-posts" class="back-link">&larr; Back to All Posts</a>
+      <a *ngIf="wordpressService.isLoggedIn()" [routerLink]="['/edit-post', post.id]" class="edit-link">
+        Edit Post
       </a>
     </div>
+
     <div class="post-content">
-      <img *ngIf="post._embedded['wp:featuredmedia']"
-        [src]="post._embedded['wp:featuredmedia'][0].source_url" alt="Featured Image">
-      <h1 [innerHTML]="post.title.rendered"></h1>
-      <h2 *ngIf="post.acf && post.acf.post_subtitle" class="post-subtitle">
-        {{ post.acf.post_subtitle }}
+      <img *ngIf="post._embedded?.['wp:featuredmedia']"
+           [src]="post._embedded['wp:featuredmedia'][0].source_url" alt="Featured Image">
+
+      <h1 [innerHTML]="post.title?.rendered"></h1>
+
+      <h2 *ngIf="post.acf?.subtitle" class="post-subtitle">
+        {{ post.acf.subtitle }}
       </h2>
-      <div class="content" [innerHTML]="post.content.rendered"></div>
+
+      <div class="post-meta">
+        <span *ngIf="post._embedded?.author">by {{ post._embedded.author[0].name }}</span>
+        <span>on {{ post.date | date: 'longDate' }}</span>
+      </div>
     </div>
+
+    <div class="post-body" [innerHTML]="post.content?.rendered"></div>
+
+    <!-- Comments Section - Use direct properties -->
+    <section class="comments-section">
+      <h3>Comments ({{ commentCount }})</h3>
+
+      <ul class="comment-list" *ngIf="comments.length > 0; else noComments">
+        <li *ngFor="let comment of comments" class="comment-item">
+          <div class="comment-author">
+            <strong>{{ comment.author_name }}</strong> said:
+          </div>
+          <div class="comment-content" [innerHTML]="comment.content?.rendered"></div>
+        </li>
+      </ul>
+      <ng-template #noComments>
+        <p>No comments yet. Be the first!</p>
+      </ng-template>
+    </section>
+
+    <!-- Add Comment Form (remains the same) -->
+    <section class="add-comment-form" *ngIf="wordpressService.isLoggedIn()">
+      <h4>Add Your Comment</h4>
+      <form (ngSubmit)="onSubmitComment()">
+        <textarea [(ngModel)]="newCommentContent" placeholder="Type your comment here..." name="newCommentContent" rows="4" required></textarea>
+        <button type="submit">Submit Comment</button>
+        <div *ngIf="commentSubmitSuccess" class="success-message">Comment submitted!</div>
+        <div *ngIf="commentSubmitError" class="error-message">{{ commentSubmitError }}</div>
+      </form>
+    </section>
+    <section class="login-prompt" *ngIf="!wordpressService.isLoggedIn()">
+      <p><a routerLink="/login">Log in</a> to post a comment.</p>
+    </section>
+
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="loading-indicator">
+    <p>Loading post...</p>
   </div>
 </div>

@@ -12,48 +12,60 @@
     <a class="redirect-button" routerLink="/create-post">Create new post</a>
   </div>
 
-  <div *ngIf="loading">
-    <p>Loading...</p>
+  <div class="sort-controls">
+    <button (click)="sortByDate()" [class.active]="sortBy === 'date'">
+      Latest Posts
+    </button>
+    <button (click)="sortByComments()" [class.active]="sortBy === 'comments'">
+      Most Commented
+    </button>
   </div>
 
-  <div *ngIf="error">
-    <p class="error-message">{{ error }}</p>
-  </div>
+  <div *ngIf="loading"> <p>Loading...</p> </div>
+  <div *ngIf="error"> <p class="error-message">{{ error }}</p> </div>
 
   <div *ngIf="!loading && !error">
-
     <div class="posts-grid" *ngIf="posts.length > 0">
       <div *ngFor="let post of posts" class="post-item">
-        <img *ngIf="post._embedded['wp:featuredmedia']" [src]="post._embedded['wp:featuredmedia'][0].source_url" alt="Featured Image">
-        <h2 [innerHTML]="post.title.rendered"></h2>
-        <div class="category-tags" *ngIf="post._embedded['wp:term']">
-          <a *ngFor="let category of post._embedded['wp:term'][0]" [routerLink]="['/category', category.id]">
-            <span class="category-tag">{{ category.name }}</span>
-          </a>
+
+        <!-- Image Link -->
+        <a [routerLink]="['/posts', post.id]">
+          <img *ngIf="post._embedded?.['wp:featuredmedia']"
+               [src]="post._embedded['wp:featuredmedia'][0].source_url"
+               alt="Featured Image">
+          <div *ngIf="!post._embedded?.['wp:featuredmedia']" class="no-image-placeholder">
+            <span>(No Image)</span>
+          </div>
+        </a>
+
+        <!-- Content Area - This will grow -->
+        <div class="post-content">
+          <h2 [innerHTML]="post.title?.rendered"></h2>
+          <div class="category-tags" *ngIf="post._embedded?.['wp:term']">
+            <a *ngFor="let category of post._embedded['wp:term'][0]"
+               [routerLink]="['/category', category.id]">
+              <span class="category-tag">{{ category.name }}</span>
+            </a>
+          </div>
+          <div class="post-meta">
+            <span *ngIf="post._embedded?.author">by <strong>{{ post._embedded.author[0].name }}</strong></span>
+            <span>on <strong>{{ post.date | date: 'longDate' }}</strong></span>
+            <span *ngIf="sortBy === 'comments' && post.comment_count !== undefined"> ({{ post.comment_count }} Comments)</span>
+          </div>
+          <div class="excerpt" [innerHTML]="post.excerpt?.rendered"></div>
         </div>
-        <div class="post-meta">
-          <span>by <strong>{{ post._embedded.author[0].name }}</strong> on <strong>{{ post.date | date: 'longDate' }}</strong></span>
-        </div>
-        <div class="excerpt" [innerHTML]="post.excerpt.rendered"></div>
+
+        <!-- Button - Moved OUTSIDE post-content -->
         <a class="read-more-btn" [routerLink]="['/posts', post.id]">Read More</a>
+
       </div>
     </div>
 
-    <div class="no-results" *ngIf="posts.length === 0">
-      <p>No posts found. Please try a different search term.</p>
-    </div>
-
+    <div class="no-results" *ngIf="posts.length === 0"> <p>No posts found.</p> </div>
     <div class="pagination-controls" *ngIf="totalPages > 1">
-        <button (click)="previousPage()" [disabled]="currentPage === 1">
-          &larr; Previous Page
-        </button>
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-        <button (click)="nextPage()" [disabled]="currentPage === totalPages">
-          Next Page &rarr;
-        </button>
-
-        <button class="show-all-btn" (click)="loadAllPosts()">Show All</button>
-
-      </div>
+      <button (click)="previousPage()" [disabled]="currentPage === 1"> &larr; Previous Page </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages"> Next Page &rarr; </button>
+    </div>
   </div>
 </div>

@@ -48,6 +48,42 @@ export class Wordpress {
     return this.http.get<any[]>(`${this.apiUrl}posts?_embed&categories=${categoryId}`);
   }
 
+  getComments(postId: number): Observable<any[]> {
+    return this.http.get<any>(`${this.loginUrl}wp/v2/comments?posts=${postId}`);
+  }
+
+  createComment(postId: number, content: string): Observable<any> {
+    const token = localStorage.getItem('token');
+    // Comments require authentication
+    if (!token) { throw new Error('Authentication required to comment.'); }
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
+    const body = {
+      post: postId, // The ID of the post this comment belongs to
+      content: content, // The text of the comment
+      status: 'approved' // Automatically approve comments for logged-in users
+    };
+
+    return this.http.post<any>(`${this.loginUrl}wp/v2/comments`, body, { headers });
+  }
+
+  getPostsByComments(page: number = 1): Observable<{posts: any[], totalPages: number}> {
+    const url = `${this.loginUrl}my-playground/v1/posts-by-comments?per_page=${this.postsPerPage}&page=${page}`;
+
+    return this.http.get<any[]>(url, {observe : 'response'}).pipe(
+      map(response => {
+        //read total pages from header
+        const totalPages = Number(response.headers.get('X-WP-TotalPages'));
+        const posts = response.body || [];
+        return { posts, totalPages};
+      })
+    );
+  }
+
   //login authentication method
   login(username: string, password: string): Observable<any> {
     const loginUrl = `${this.loginUrl}jwt-auth/v1/token`;
